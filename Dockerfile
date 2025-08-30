@@ -22,8 +22,7 @@ RUN pip install --no-cache-dir -r requirements.txt \
         if [ -f "$d/requirements.txt" ]; then \
             pip install --no-cache-dir -r "$d/requirements.txt";\
         fi; \
-    done;
-
+    done; 
 
 FROM python:3.11-slim-bookworm AS release
 WORKDIR /opt/CTFd
