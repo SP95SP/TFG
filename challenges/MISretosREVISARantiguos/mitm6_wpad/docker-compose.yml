@@ -1,0 +1,38 @@
+version: "3.8"
+
+services:
+  atacante:
+    build: ./atacante
+    container_name: atacante
+    volumes:
+      - ./atacante:/data
+    networks:
+      mitmnet:
+        ipv6_address: "fd00::66"
+
+  victima_win:
+    build: ./victima_win
+    container_name: victima_win
+    networks:
+      mitmnet:
+        ipv6_address: "fd00::77"
+
+  http_flag:
+    build: ./http_flag
+    container_name: http_flag
+    volumes:
+      - ./http_flag:/usr/local/apache2/htdocs/
+    networks:
+      mitmnet:
+        ipv6_address: "fd00::88"
+    ports:
+      - "${PORT}:80"
+
+networks:
+  mitmnet:
+    driver: bridge
+    enable_ipv6: true
+    ipam:
+      driver: default
+      config:
+        - subnet: "fd00::/64"

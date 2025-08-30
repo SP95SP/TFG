@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Demo de Servidor IA: Subida y Testeo de Modelos Pickle</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        html, body {
+            height: 100%;
+        }
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0d1b2a 0%, #0b8457 55%, #1f4287 100%);
+            color: #e5e5e5;
+            font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            background: rgba(20, 40, 60, 0.93);
+            border-radius: 20px;
+            padding: 40px 32px 32px 32px;
+            max-width: 700px;
+            box-shadow: 0 8px 40px rgba(0,0,0,0.22);
+            text-align: center;
+        }
+        h1 {
+            font-size: 2.9em;
+            margin-bottom: 0.2em;
+            font-weight: bold;
+            letter-spacing: 1px;
+            background: linear-gradient(90deg, #48ff9c 0%, #38cfd9 50%, #205072 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .description {
+            font-size: 1.50em;
+            margin-bottom: 25px;
+            color: #b8ffe0;
+        }
+        form {
+            margin-top: 20px;
+            margin-bottom: 18px;
+        }
+        input[type="file"] {
+            border: none;
+            padding: 12px 0;
+            background: transparent;
+            color: #e5e5e5;
+            font-size: 1em;
+            margin-bottom: 16px;
+        }
+        input[type="submit"], button {
+            background: linear-gradient(90deg, #38cfd9 0%, #48ff9c 100%);
+            color: #0d1b2a;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            padding: 11px 32px;
+            font-size: 1.50em;
+            cursor: pointer;
+            transition: box-shadow 0.2s, transform 0.2s;
+            box-shadow: 0 2px 8px rgba(72,255,156,0.08);
+        }
+        input[type="submit"]:hover, button:hover {
+            box-shadow: 0 6px 22px 2px #2af59855;
+            transform: translateY(-2px) scale(1.02);
+            font-size: 1.30em;
+        }
+        a {
+            color: #38cfd9;
+            font-weight: 600;
+            text-decoration: none;
+            transition: color 0.17s;
+            font-size: 1.30em;
+            letter-spacing: 0.5px;
+        }
+        a:hover {
+            color: #48ff9c;
+        }
+        .footer {
+            margin-top: 32px;
+            color: #5da08f;
+            font-size: 0.96em;
+            opacity: 0.66;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Test de Modelos IA (.pkl)</h1>
+        <div class="description">
+            Plataforma experimental para cargar y evaluar modelos Pickle de Python.<br>
+            Sube tu archivo <b>.pkl</b> para simular su ejecución y observar el resultado.<br>
+            <br>
+            <b>Uso previsto:</b> Esta web permite testear de forma segura modelos serializados, útil para desarrolladores y profesionales de IA.<br>
+            <br>
+            <b>¿Qué ocurre tras subir el archivo?</b><br>
+            El servidor procesará tu modelo y mostrará el resultado deserializado.<br>
+            Si el archivo no es válido o no es serializable, verás un error.
+        </div>
+        <form action="/upload" method="post" enctype="multipart/form-data">
+            <input type="file" name="model" accept=".pkl" required><br>
+            <input type="submit" value="Subir y Evaluar">
+        </form>
+        <a href="/predict">Probar predicción más reciente</a>
+
+    </div>
+</body>
+</html>

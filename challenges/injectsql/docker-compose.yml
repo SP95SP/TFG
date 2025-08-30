@@ -1,0 +1,13 @@
+version: "3.8"
+services:
+  web:
+    build: .
+    ports:
+      - "${PORT}:80"
+    environment:
+      - FLAG_FILE=/flag.txt
+    volumes:
+      - ./app:/var/www/html
+      - ./prepare.bash:/prepare.bash
+      - ./db-init.sql:/db-init.sql
+      - ./_flag.txt:/flag.txt

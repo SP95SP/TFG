@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Calculadora Vulnerable</title>
+</head>
+<body>
+  <h1>Calculadora Vulnerable</h1>
+  <form method="POST">
+    <input type="text" name="expression" placeholder="Ingrese solo números y operadores" style="width: 300px;">
+    <br><br>
+    <input type="submit" value="Calcular">
+  </form>
+  {% if result is not none %}
+    <h2>Resultado: {{ result }}</h2>
+  {% endif %}
+  {% if error %}
+    <h3 style="color: red;">Error: {{ error }}</h3>
+  {% endif %}
+  <hr>
+  <p>Utiliza la calculadora para realizar operaciones matemáticas. Ingresa solo números y operadores.</p>
+  <p>La entrada no se valida, lo que permite la inyección de código Python.</p>
+  <p>Por ejemplo: <code>__import__('os').popen('cat _flag.txt').read()</code></p>
+</body>
+</html>

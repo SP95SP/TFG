@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Calculadora Vulnerable</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background-color: #eaeaea;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+    }
+
+    .calculator {
+      background-color: #4e4e59;
+      padding: 20px;
+      border-radius: 20px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.2);
+      width: 260px;
+    }
+
+    .display {
+      width: 100%;
+      height: 50px;
+      font-size: 1.5em;
+      margin-bottom: 10px;
+      padding: 10px;
+      text-align: right;
+      border: none;
+      border-radius: 8px;
+      background-color: #d1d4c9;
+    }
+
+    .buttons {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+
+    .buttons button {
+      padding: 15px;
+      font-size: 1.2em;
+      border: none;
+      border-radius: 8px;
+      background-color: #2f2f39;
+      color: #fff;
+      cursor: pointer;
+    }
+
+    .buttons button:hover {
+      background-color: #5c5c70;
+    }
+
+    .info {
+      margin-top: 25px;
+      font-size: 0.85em;
+      color: #444;
+      text-align: center;
+      max-width: 300px;
+    }
+
+    .result {
+      margin-top: 20px;
+      font-size: 1.2em;
+    }
+
+    .error {
+      color: red;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Calculadora Vulnerable</h1>
+
+  <div class="calculator">
+    <form method="POST">
+      <input type="text" name="expression" id="expression" class="display" placeholder="0" value="{{ expression|default('') }}">
+      <div class="buttons">
+        <button type="button" onclick="append('7')">7</button>
+        <button type="button" onclick="append('8')">8</button>
+        <button type="button" onclick="append('9')">9</button>
+        <button type="button" onclick="append('/')">÷</button>
+        <button type="button" onclick="append('4')">4</button>
+        <button type="button" onclick="append('5')">5</button>
+        <button type="button" onclick="append('6')">6</button>
+        <button type="button" onclick="append('*')">×</button>
+        <button type="button" onclick="append('1')">1</button>
+        <button type="button" onclick="append('2')">2</button>
+        <button type="button" onclick="append('3')">3</button>
+        <button type="button" onclick="append('-')">−</button>
+        <button type="button" onclick="append('0')">0</button>
+        <button type="button" onclick="append('.')">.</button>
+        <button type="submit">=</button>
+        <button type="button" onclick="append('+')">+</button>
+        <button type="button" onclick="clearDisplay()" style="grid-column: span 4; background-color: #aa3333;">C</button>
+      </div>
+    </form>
+  </div>
+
+  {% if result is not none %}
+    <div class="result">Resultado: {{ result }}</div>
+  {% endif %}
+  {% if error %}
+    <div class="result error">Error: {{ error }}</div>
+  {% endif %}
+
+  <div class="info">
+    <p>Entrada no validada. Puede ejecutar código Python.</p>
+    <p>Ejemplo: <code>__import__('os').popen('cat _flag.txt').read()</code></p>
+  </div>
+
+  <script>
+    function append(val) {
+      document.getElementById('expression').value += val;
+    }
+    function clearDisplay() {
+      document.getElementById('expression').value = '';
+    }
+  </script>
+
+</body>
+</html>

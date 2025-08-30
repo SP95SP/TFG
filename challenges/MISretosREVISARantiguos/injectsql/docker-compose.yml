@@ -1,0 +1,24 @@
+services:
+  db:
+    image: mysql:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: example
+      MYSQL_DATABASE: challenge
+    volumes:
+      - db-data:/var/lib/mysql
+      - ./app/db-init.sql:/docker-entrypoint-initdb.d/db-init.sql  # Línea añadida
+
+  web:
+    build: .
+    ports:
+      - "${PORT}:80"
+    volumes:
+      - ./app:/var/www/html
+    environment:
+      - FLAG_FILE=/flag.txt
+    depends_on:
+      - db
+    command: apache2-foreground
+
+volumes:
+  db-data:

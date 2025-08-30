@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Calculadora Vulnerable</title>
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: 'Segoe UI', 'Arial', sans-serif;
+      background: radial-gradient(circle at 65% 35%, #175972 0%, #0c3446 70%, #14776f 100%);
+      color: #e4f7fa;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+    }
+    .container {
+      margin: 32px 0 32px 0;
+      background: #222a33;
+      border-radius: 24px;
+      box-shadow: 0 4px 32px #205e5270;
+      padding: 36px 30px 40px 30px;
+      width: 500px;
+      max-width: 96vw;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    h1 {
+      font-size: 2.5rem;
+      font-weight: bold;
+      margin-bottom: 22px;
+      color: #d4fff2;
+      text-shadow: 0 2px 16px #11d9ac50, 0 2px 8px #125f4c99;
+      letter-spacing: 1.5px;
+    }
+    .input-expression {
+      width: 92%;
+      font-size: 1.16rem;
+      background: #1c2229;
+      color: #e9ffff;
+      padding: 13px 18px;
+      border: none;
+      border-radius: 9px;
+      padding: 14px 20px;
+      margin-bottom: 30px;
+      box-shadow: 0 2px 12px #063d4655;
+      outline: none;
+      transition: box-shadow 0.1s;
+    }
+    .input-expression:focus {
+      box-shadow: 0 0 10px #4dfff7;
+    }
+    .button-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 56px);
+      grid-template-rows: repeat(4, 56px);
+      gap: 12px;
+      margin-bottom: 26px;
+      margin-top: 0;
+      justify-content: center;
+      align-items: center;
+    }
+    .btn {
+      font-size: 1.2rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      outline: none;
+      box-shadow: 0 2px 8px #0001;
+      transition: background 0.15s, box-shadow 0.15s;
+      width: 56px;
+      height: 56px;
+    }
+    .btn.number, .btn.scientific {
+      background: #41a4e8;
+      color: #fff;
+    }
+    .btn.operator {
+      background: #38cda1;
+      color: #fff;
+    }
+    .btn.clear {
+      background: #b03d5c;
+      color: #fff;
+    }
+    .btn:active {
+      filter: brightness(0.92);
+      box-shadow: 0 1px 3px #0004;
+    }
+    .calc-btn-row {
+      display: flex;
+      width: 100%;
+      justify-content: center;
+    }
+    .submit-btn {
+      margin: 32px 0 22px 0;
+      width: 100%;
+      font-size: 1.22rem;
+      font-weight: bold;
+      border: none;
+      border-radius: 10px;
+      background: linear-gradient(90deg, #18efb6 60%, #26e0c7 100%);
+      color: #1c2b28;
+      padding: 14px 0;
+      cursor: pointer;
+      transition: background 0.2s;
+      box-shadow: 0 3px 12px #23c19a30;
+    }
+    .submit-btn:active {
+      filter: brightness(0.95);
+    }
+    .result-block {
+      margin: 0 auto 20px auto;
+      background: #28343b;
+      border-radius: 8px;
+      padding: 16px 18px 7px 18px;
+      width: 98%;
+      font-size: 1.22rem;
+      font-weight: 500;
+      color: #c4f6e3;
+      box-shadow: 0 2px 10px #14535e44;
+      text-align: center;
+    }
+    .error-block {
+      background: #333a42;
+      color: #ffa89c;
+      margin: 0 0 20px 0;
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-weight: 600;
+      text-align: center;
+    }
+    .desc-block {
+      margin-top: 18px;
+      background: #24313b;
+      border-radius: 9px;
+      padding: 18px 18px 6px 18px;
+      width: 98%;
+      color: #e0fffa;
+      font-size: 1.04rem;
+      box-shadow: 0 2px 8px #23c19a20;
+    }
+    code {
+      background: #17222b;
+      color: #a0fff0;
+      padding: 3px 6px;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Calculadora Vulnerable</h1>
+    <form method="POST" autocomplete="off">
+      <input class="input-expression" type="text" name="expression" placeholder="Ingrese solo números y operadores" autocomplete="off">
+      <div class="button-grid">
+        <!-- Fila 1 -->
+        <button type="button" class="btn number">7</button>
+        <button type="button" class="btn number">8</button>
+        <button type="button" class="btn number">9</button>
+        <button type="button" class="btn operator">÷</button>
+        <button type="button" class="btn operator">(</button>
+        <button type="button" class="btn scientific">sin</button>
+        <!-- Fila 2 -->
+        <button type="button" class="btn number">4</button>
+        <button type="button" class="btn number">5</button>
+        <button type="button" class="btn number">6</button>
+        <button type="button" class="btn operator">×</button>
+        <button type="button" class="btn operator">)</button>
+        <button type="button" class="btn scientific">cos</button>
+        <!-- Fila 3 -->
+        <button type="button" class="btn number">1</button>
+        <button type="button" class="btn number">2</button>
+        <button type="button" class="btn number">3</button>
+        <button type="button" class="btn operator">−</button>
+        <button type="button" class="btn operator">^</button>
+        <button type="button" class="btn scientific">tan</button>
+        <!-- Fila 4 -->
+        <button type="button" class="btn number">0</button>
+        <button type="button" class="btn number">.</button>
+        <button type="button" class="btn clear">C</button>
+        <button type="button" class="btn operator">+</button>
+        <button type="button" class="btn operator">√</button>
+        <button type="button" class="btn scientific">log</button>
+      </div>
+      <button type="submit" class="submit-btn">Calcular</button>
+      <!-- Renderizado de resultados -->
+      {% if result is not none %}
+      <div class="result-block">
+        <b>Resultado: {{ result }}</b>
+      </div>
+      {% endif %}
+      {% if error %}
+      <div class="error-block">
+        Error: {{ error }}
+      </div>
+      {% endif %}
+    </form>
+    <div class="desc-block">
+      Utiliza la calculadora para realizar operaciones matemáticas, incluyendo funciones científicas.<br>
+      La entrada <b>no se valida</b>, lo que permite la inyección de código Python.<br>
+      <b>Ejemplo de explotación:</b>
+      <br>
+      <code>__import__('os').popen('cat _flag.txt').read()</code>
+    </div>
+  </div>
+  <script>
+    // Permite a los botones rellenar el input
+    document.querySelectorAll('.btn').forEach(function(btn) {
+      btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        let input = document.querySelector('.input-expression');
+        if (btn.classList.contains('clear')) {
+          input.value = "";
+        } else {
+          let symbol = btn.textContent;
+          // Corrige símbolos a notación Python
+          if (symbol === '÷') symbol = '/';
+          if (symbol === '×') symbol = '*';
+          if (symbol === '−') symbol = '-';
+          if (symbol === '√') symbol = '**0.5';
+          input.value += symbol;
+        }
+      });
+    });
+  </script>
+</body>
+</html>

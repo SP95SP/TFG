@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Subida de modelo Pickle</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(to bottom right, #b6f5c9, #fffbb1, #cde7ff);
+            color: #222;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 50px;
+        }
+
+        h1 {
+            background-color: rgba(0, 0, 0, 0.1);
+            padding: 10px 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        form {
+            margin-top: 30px;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        input[type="file"], button {
+            padding: 8px;
+            margin: 10px 0;
+            font-size: 16px;
+        }
+
+        a {
+            display: inline-block;
+            margin-top: 20px;
+            text-decoration: none;
+            font-weight: bold;
+            color: #004a7c;
+        }
+
+        a:hover {
+            color: #0077b6;
+        }
+    </style>
+</head>
+<body>
+    <h1>Prueba tu modelo Pickle</h1>
+    <a>1. Selecciona tu modelo desde tu carpeta local, pulsa enviar y listo!</a>
+    <a>2. A continuación dale a probar predicción para testear el modelo subido</a>
+    <form action="/upload" method="post" enctype="multipart/form-data">
+        <input type="file" name="file" accept=".pkl" required><br>
+        <button type="submit">Enviar!</button>
+    </form>
+
+    <a href="/predict">Probar predicción</a>
+</body>
+</html>

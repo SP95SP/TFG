@@ -1,0 +1,5 @@
+#!/bin/bash
+mydir=$( cd "$(dirname "$0")" && pwd )
+cd $mydir
+INSTANCENAME=$( cat _instance )
+docker compose -p $INSTANCENAME down

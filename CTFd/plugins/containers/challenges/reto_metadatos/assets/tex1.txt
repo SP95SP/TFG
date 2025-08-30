@@ -1,0 +1,3 @@
+"La inyección SQL es un tipo de vulnerabilidad de seguridad de las aplicaciones web que permite a un atacante interferir con las consultas que una aplicación hace a su base de datos. Por lo general, ocurre cuando la entrada del usuario no se valida correctamente y se inserta directamente en una consulta SQL. Un atacante puede aprovechar esta falla para manipular o acceder a datos, eludir la autenticación, modificar estructuras de bases de datos, o incluso ejecutar comandos del sistema operativo."
+
+

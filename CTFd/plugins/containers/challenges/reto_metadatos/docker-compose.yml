@@ -1,0 +1,7 @@
+version: "3.8"
+services:
+  linuxbox:
+    build: .
+    ports:
+      - "${PORT}:22"
+    tty: true

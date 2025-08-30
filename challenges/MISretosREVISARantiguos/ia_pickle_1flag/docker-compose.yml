@@ -1,0 +1,8 @@
+version: "3.8"
+services:
+  ia_pickle:
+    build: .
+    ports:
+      - "${PORT}:5000"
+    volumes:
+      - .:/app

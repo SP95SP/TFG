@@ -1,0 +1,13 @@
+services:
+  web:
+    build: .
+    ports:
+      - "${PORT}:3000"
+    volumes:
+      - ./app:/usr/src/app
+    environment:
+      - FLAG_FILE=/flag.txt
+    command: node server.js
+
+volumes:
+  db-data:
