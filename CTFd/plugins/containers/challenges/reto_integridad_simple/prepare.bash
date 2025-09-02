@@ -14,6 +14,6 @@ echo "port: $PORT"
 printf "PORT=$PORT\n" > .env
 echo $INSTANCENAME > _instance
 
-echo "flag{test}" > flag.txt
+echo "flag{test}" > _flag.txt
 
 echo "Environment prepared. Flag generated in flag.txt"

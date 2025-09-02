@@ -32,14 +32,6 @@ __import__('os').popen('ls').read()
 
 
 
-
-
-
-
-
-
-
-
 prepare.bash
 - Se ejecuta antes de iniciar el contenedor.
     •  Determinar el nombre de la instancia (usando el nombre de la carpeta, a menos que se pase un parámetro). 
@@ -73,9 +65,6 @@ Dockerfile
     • Crea el entorno de ejecución preparado para ejecutar la aplicación vulnerable.
 
 
-
-
-
 requirements.txt
     • Lista las dependencias de Python necesarias.
 Hay que fijar las versiones (Flask==2.0.3 y Werkzeug==2.0.3) porque sino en las más nuevas la función url_quote no está disponible.
@@ -95,17 +84,6 @@ if name == 'main': app.run(host='0.0.0.0', port=80)
 templates/index.html
     • Interfaz web para la calculadora.
     • Un formulario con un campo de texto donde se debe ingresar la operación matemática (o código) y un botón para enviar el formulario.
-    • PENSANDO EN HACER LA INTERFAZ MÁS COMPLEJA, con botones como una calculadora de verdad.
-
-
-
-
-
-
-
-
-
-
 
 
 workflow

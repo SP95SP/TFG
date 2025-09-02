@@ -1,190 +1,94 @@
-FASE 2
+ia_pickle (Fase 2: Acceso lateral – robo de modelos ajenos)
 
-http://localhost:58080
-Machine learning mal protegido
-Python + ML lib + Flask
--Estructura base del reto "ia_pickle" extendido con segunda flag:
-	 Fase 1: RCE por deserialización
-	 Fase 2: Exploración del sistema y extracción de modelos para obtener una flag secundaria
-Escenario simulado
-Un servidor de predicción de Machine Learning expone una funcionalidad web para:
-    1. Subir archivos .pkl (modelos) formato binario de Pickle en Python
-           pickle permite serializar y deserializar objetos en Python (guardarlos y cargarlos desde archivos).
-Vulnerabilidad: si deserializas un archivo creado por un atacante, este puede incluir código malicioso que se ejecuta al cargarlo.
-    2. Ejecutarlos para hacer "predicciones"
-
-
-Descripción general del flujo (workflow)
-El servidor expone dos funcionalidades principales:
-    • /upload (POST): Permite a los usuarios subir un archivo .pkl, que se guarda como models/model.pkl.
-    • /predict (GET): Carga el archivo models/model.pkl utilizando pickle.load() y muestra el contenido deserializado como "predicción".
-    • En Python, un objeto es serializable cuando puede ser convertido a una secuencia de bytes que luego se puede guardar en un archivo o transmitir por red, y posteriormente ser reconstruido (deserializado) exactamente como era originalmente.
-El servidor no ejecuta ninguna lógica de predicción de IA real, simplemente deserializa y muestra el contenido del objeto .pkl subido.
-Si se quisiera hacer que el sistema hiciera predicciones reales:
-    • Se debería usar una librería como joblib o sklearn para guardar y cargar modelos entrenados.
-    • Debería haber una interfaz para subir datos de entrada (por ejemplo, campos de un formulario).
-    • El servidor debería tener las clases de los modelos importadas para permitir la deserialización segura.
-
-
-
-
-
+Árbol de archivos
 ia_pickle/
-├── app.py              # Servidor Flask con endpoints vulnerables
-├── requirements.txt        # Dependencias de Python
-├── Dockerfile              # Imagen Docker para el servidor
-├── docker-compose.yml      # Orquestador del contenedor
-├── prepare.bash 		   # Genera la flag y preparar el entorno
-├── start.bash              # Script para levantar el contenedor
-├── stop.bash       # Script para detener y eliminar el contenedor
-├── _instance  # Nombre de la instancia (generado automáticamente)
-├── .env         	  # Variables de entorno, incluyendo el puerto
-├── _flag.txt   	 # Flag del reto (generada automáticamente)
-├── models/    		 # Carpeta donde se suben los modelos .pkl
+├── app.py
+├── crear_modelos_con_flag.py
+├── docker-compose.yml
+├── Dockerfile
+├── prepare.bash
+├── requirements.txt
+├── start.bash
+├── stop.bash
+├── readme.txt
+├── readmeAlumno.txt
 ├── templates/
-    └── form.html 	# Para subir el modelo y probar la predicción
-└── models/ 
-    └── list_models.pkl
-    └── read_flag1.pkl
-    └── exec_whoami.pkl
+│   └── form.html
+├── models/
+│   ├── admin_model.pkl
+│   ├── ana_model.pkl
+│   ├── carla_model.pkl
+│   ├── juan_model.pkl
+│   ├── pepe_model.pkl
+│   └── model.pkl
+└── crack/
+    ├── exec_whoami.pkl
+    ├── gen_excec_command.py
+    ├── gen_list_models.py
+    ├── gen_read_flag1.py
+    ├── gen_read_flag2_model.py
+    ├── list_models.pkl
+    ├── not_evil.pkl
+    ├── read_flag1.pkl
     └── read_flag2_from_model.pkl
 
+Además se generan:
+- _flag.txt: flag de la fase 1 (no relevante aquí)
+- _flag2.txt: flag de la fase 2 (la que se debe robar)
+- .env: puerto
+- _instance: nombre de la instancia
 
-Este reto está montado para simular un servidor que permite a los usuarios subir sus propios modelos para luego usarlos en predicciones.
-El problema es que no valida ni protege correctamente esos archivos, por lo tanto, si el atacante sube un archivo .pkl malicioso (modelo con código embebido), el servidor lo carga automáticamente y ejecuta el código malicioso.
+Descripción del reto
+Esta es la Fase 2. El sistema contiene múltiples modelos en la carpeta models que simulan pertenecer a otros usuarios. El atacante debe moverse lateralmente dentro del contenedor, listar esos modelos y cargar el modelo ajeno admin_model.pkl. Dicho modelo contiene serializada la Flag2, que también se encuentra en _flag2.txt.
 
-Un escenario real donde:
+Objetivo
+Obtener la Flag2 cargando y leyendo el modelo ajeno admin_model.pkl con pickle.load, demostrando movimiento lateral dentro del mismo contenedor.
 
-    Una empresa o plataforma ofrece un servicio automático de predicciones.
+Explotación 
 
-    Los usuarios suben sus propios modelos .pkl para que se usen en el backend.
+Usando cargas preparadas en crack/
+El flujo de la aplicación permite subir un archivo .pkl y luego predecirlo con pickle.load. Esto puede usarse para listar models y extraer la Flag2.
+Subir crack/list_models.pkl en /upload y luego visitar /predict para ver los modelos.
+Subir crack/read_flag2_from_model.pkl en /upload y luego visitar /predict para ver la Flag2.
 
-    El backend tiene una funcionalidad como:
+prepare.bash
+Genera .env con el puerto, _instance con el nombre de la instancia, _flag.txt y _flag2.txt con las flags. Crea carpetas y llama a crear_modelos_con_flag.py que genera modelos de ejemplo y admin_model.pkl con la Flag2 serializada.
 
-        “Sube tu modelo entrenado”
+start.bash
+Levanta el contenedor con docker compose en segundo plano.
 
-        “Te lo probamos”
+stop.bash
+Detiene y elimina el contenedor de la instancia.
 
-    Pero el backend usa pickle.load() directamente en los archivos subidos
+docker-compose.yml
+Define el servicio ia_pickle, construye desde el Dockerfile y mapea ${PORT}:5000. Monta el directorio en /app.
 
+Dockerfile
+Basado en python:3.10-slim. Copia el proyecto, instala dependencias de requirements.txt y ejecuta app.py con Flask en el puerto 5000.
 
+requirements.txt
+Incluye Flask y dependencias necesarias.
 
+app.py
+Aplicación Flask que permite subir un archivo .pkl a /upload y luego cargarlo en /predict con pickle.load. Esta deserialización es insegura y permite ejecutar código o acceder a ficheros locales como modelos ajenos.
 
+templates/form.html
+Formulario para subir un archivo .pkl y ejecutar la predicción.
 
+crack/
+Payloads preparados para demostrar la explotación. Incluyen list_models.pkl para listar modelos y read_flag2_from_model.pkl para leer admin_model.pkl y revelar la Flag2.
 
+Workflow
+1. Ejecutar prepare.bash para preparar entorno, flags y modelos.
+2. Ejecutar start.bash para levantar el contenedor.
+3. Acceder a http://127.0.0.1:58080 y usar el formulario:
+   - Subir list_models.pkl y consultar /predict para ver los modelos en /models.
+   - Subir read_flag2_from_model.pkl y consultar /predict para extraer la Flag2.
+4. Ejecutar stop.bash para detener el contenedor.
 
+Tecnologías utilizadas
+Docker y Docker Compose, Python 3.10, Flask, pickle para deserialización, bash scripts para la gestión del entorno.
 
-
-Este reto contiene dos fases:
-
-Fase 1: Vulnerabilidad de deserialización con Pickle
-- El servidor permite subir modelos `.pkl`
-- Usa `pickle.load()` sin validar
-- El atacante puede ejecutar comandos en el servidor (RCE)
-- La Flag1 se encuentra en `_flag.txt`
-
-Fase 2: Acceso lateral: robo de modelos ajenos
-- Hay múltiples modelos ya cargados de otros usuarios en `/models`
-- El atacante puede listarlos desde su shell (`ls models/`)
-- Uno de ellos (`admin_model.pkl`) contiene la Flag2 serializada
-- El atacante debe hacer `pickle.load(open("models/admin_model.pkl"))` desde un shell para verla
-- Flag2 se encuentra en `_flag2.txt`
-
-Comandos de uso
-
-bash prepare.bash      # prepara el entorno, flags y modelos
-bash start.bash        # levanta el contenedor
-bash stop.bash         # lo detiene
-
-
-Ataque
-1. Crear y subir un `.pkl` malicioso que haga `subprocess.check_output(['ls', 'models'])`
-2. Observar que existe `admin_model.pkl`
-3. Crear y subir otro `.pkl` que ejecute: `pickle.load(open('models/admin_model.pkl', 'rb'))`
-4. Obtener la segunda flag como resultado del `__repr__`
-
-
-
-
-
-
-
-
-
-
-
-Explotación de la vulnerabilidad (fase 1)
-
-Crear archivo .pkl malicioso que lea la flag:
-
-# crear_payload.py
-import pickle
-import subprocess
-
-class Evil:
-    def __reduce__(self):
-        return (subprocess.check_output, (["cat", "_flag.txt"],))
-
-with open("evil.pkl", "wb") as f:
-    pickle.dump(Evil(), f)
-
-print("evil.pkl creado.")
-
-Creas el archivo mediante py (evil.pkl):
-
-python3 crear_payload.py
-
- Se sube en la web y se le da a predecir
-
-
-Exploración para descubrir la segunda fase
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                CRACK TOOLS             
-          Archivos .pkl para explotar        
-          el reto vulnerable ia_pickle     
-
-
-
- Todos los archivos fueron generados para probar y explotar
-las fases del reto CTF "ia_pickle", que simula un entorno 
-vulnerable de deserialización con Pickle en Python.
-
- ARCHIVOS INCLUIDOS:
-
-1️  exec_whoami.pkl
-     - Ejecuta el comando 'whoami' dentro del contenedor
-     - Verifica que tienes ejecución remota (RCE)
-
-2️  read_flag1.pkl
-     - Ejecuta 'cat _flag.txt'
-     - Devuelve la primera flag del reto
-
-3️  list_models.pkl
-     - Ejecuta 'ls -la models/'
-     - Lista el contenido del directorio de modelos
-
-4️  read_flag2_from_model.pkl
-     - Ejecuta un script Python que deserializa
-       el archivo 'models/admin_model.pkl'
-     - Extrae la segunda flag embebida en su __repr__()
-
+Objetivos de aprendizaje
+Comprender la explotación de deserialización insegura en pickle. Practicar movimiento lateral en un mismo contenedor. Aprender a extraer información sensible (Flag2) desde recursos ajenos en la carpeta models.
 

@@ -1,70 +1,63 @@
-Descripción general
-Este reto consiste en explotar una vulnerabilidad de inyección SQL en una aplicación web simulada de una empresa farmacéutica. El entorno funciona en un único contenedor Docker, integrando Apache, PHP y MariaDB. El objetivo es conseguir la flag manipulando la consulta SQL del login.
+reto-sqlinjection (Inyección SQL en aplicación web PHP)
 
 Árbol de archivos
 reto-sqlinjection/
-│
 ├── app/
-│   └── index.php
-├── _flag.txt
-├── db-init.sql
-├── prepare.bash
-├── start.bash
-├── stop.bash
-└── docker-compose.yml
+│   └── index.php        # Código PHP vulnerable con formulario de login
+├── _flag.txt            # Flag estática del reto
+├── db-init.sql          # Script SQL que inicializa base de datos y usuarios
+├── prepare.bash         # Script que prepara el entorno y lanza Apache
+├── start.bash           # Levanta el contenedor en segundo plano
+├── stop.bash            # Detiene y elimina el contenedor
+├── docker-compose.yml   # Define el servicio único con Apache, PHP y MariaDB
+└── Dockerfile           # Construcción de la imagen con Debian, Apache, PHP y MariaDB
 
+Descripción general
+Este reto consiste en explotar una vulnerabilidad de inyección SQL en una aplicación web simulada de una empresa farmacéutica. El entorno funciona en un único contenedor Docker que integra Apache, PHP y MariaDB. El objetivo es conseguir la flag manipulando la consulta SQL del login.
 
-Explicación de archivos
+Escenario simulado
+La aplicación muestra un formulario de inicio de sesión en index.php. El código PHP conecta a MariaDB y consulta la tabla users. Los datos del formulario se insertan directamente en la consulta SQL sin validación, lo que permite inyección SQL. Si la consulta devuelve éxito, se muestra la flag almacenada en _flag.txt.
 
-app/index.php: Código PHP de la web vulnerable al ataque. Realiza la conexión y consulta a la base de datos.
-
-_flag.txt: Archivo que contiene la flag que debe obtener el participante.
-
-db-init.sql: Script SQL que crea la base de datos challenge, la tabla users, el usuario admin y el usuario de base de datos ctfuser.
-
-prepare.bash: Script que inicializa la base de datos y lanza Apache dentro del contenedor.
-
-start.bash: Lanza el contenedor en segundo plano.
-
-stop.bash: Detiene y elimina el contenedor.
-
-docker-compose.yml: Define el contenedor único (web) que integra Apache, PHP y MariaDB.
-
-
-Tipo de base de datos
-Se utiliza MariaDB (totalmente compatible con MySQL), versión instalada por el sistema de paquetes de Debian dentro del contenedor.
-
-Interacción entre archivos y servicios
-
-docker-compose.yml crea el contenedor y monta todos los archivos requeridos.
-
-Al arrancar el contenedor, prepare.bash inicializa la base de datos mediante db-init.sql y luego lanza Apache.
-
-db-init.sql crea la base de datos, la tabla users, el usuario de ejemplo y el usuario de acceso desde la web.
-
-index.php recibe los datos del formulario de login, realiza la consulta SQL vulnerable y muestra el resultado y la flag en pantalla si la autenticación tiene éxito.
-
-_flag.txt almacena la flag, que se muestra únicamente al explotar correctamente la vulnerabilidad.
-
-
-
+Flujo de funcionamiento
+- docker-compose.yml levanta un contenedor único que integra Apache, PHP y MariaDB.
+- prepare.bash arranca el servicio de MariaDB, inicializa la base de datos challenge con db-init.sql y luego lanza Apache en foreground.
+- db-init.sql crea la base de datos challenge, la tabla users, el usuario admin con contraseña securepassword y el usuario de acceso ctfuser.
+- index.php recibe los datos del formulario de login, construye la consulta vulnerable y, si tiene éxito, muestra la flag.
+- _flag.txt contiene la flag estática que se revela al explotar la inyección.
 
 Resolución del reto
+Acceder en el navegador a la URL del contenedor, por ejemplo:
+http://localhost:5050
 
-Accede en el navegador a la URL del contenedor (por ejemplo, http://localhost:5050).
-
-En el formulario de inicio de sesión, en el campo "Usuario", introduce una cadena de inyección SQL, como:
+En el formulario de inicio de sesión, en el campo “Usuario”, introducir la inyección:
 ' OR 1=1 --
-(incluye el espacio inicial y el doble guion al final, sin comillas exteriores)
+(incluyendo el espacio inicial y el doble guion al final, sin comillas exteriores)
 
-Deja el campo "Contraseña" vacío y envía el formulario.
+Dejar el campo “Contraseña” vacío y enviar el formulario. Si la inyección es correcta, la aplicación mostrará la flag en pantalla.
 
-Si la inyección es correcta, la aplicación mostrará la flag en pantalla.
+El ataque funciona porque la consulta SQL se construye concatenando directamente los valores del formulario. No es necesario conocer las credenciales reales para resolver el reto, aunque los usuarios válidos de la base son admin / securepassword.
 
-El ataque funciona porque los datos del formulario se insertan directamente en la consulta SQL sin validación ni escape.
+Workflow
+1. Ejecutar bash prepare.bash para inicializar la base de datos y lanzar Apache.
+2. Ejecutar bash start.bash para levantar el contenedor.
+3. Acceder a http://localhost:5050 y usar el formulario de login.
+4. Aplicar inyección SQL en el campo “Usuario” para saltarse la autenticación y mostrar la flag.
+5. Ejecutar bash stop.bash para detener y eliminar el contenedor.
 
+Tecnologías utilizadas
+- Docker y Docker Compose
+- Debian con Apache2
+- PHP 7.x
+- MariaDB (compatible con MySQL)
+- Bash para scripts de preparación y control
 
-El usuario y contraseña reales de la base son admin / securepassword, pero no es necesario conocerlos para resolver el reto.
+Puerto de acceso
+El servicio web está disponible en el puerto 5050 del host:
+http://localhost:5050
 
-La flag es estática, está en _flag.txt y solo se muestra si el login SQL tiene éxito.
+Objetivos de aprendizaje
+- Comprender la vulnerabilidad clásica de inyección SQL.
+- Aprender a construir un payload sencillo para saltar autenticación (' OR 1=1 --).
+- Observar cómo la falta de validación en consultas SQL permite acceder a información sensible.
+- Extraer la flag como prueba de explotación exitosa.
 
